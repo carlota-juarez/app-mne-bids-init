@@ -1,0 +1,21 @@
+{
+    "bids": "C:/mne_practical_meeg_2025/ds000117_pruned", 
+    "sessions": "all",
+    "allow_missing_sessions": false,
+    "task": "auditory",
+    "runs": "all",
+    "exclude_runs": [],
+    "crop_runs": [],
+    "proc": "",
+    "rec": "",
+    "space": "",
+    "acq": "",
+    "conditions": ["Auditory/Left", "Auditory/Right"],
+    "subjects": ["01"],
+    "exclude_subjects": [],
+    "task_is_rest": false,
+    "interactive": false,
+    "ch_types": ["eeg"],
+    "data_type": "eeg",
+    "eeg_reference": "average"
+}
