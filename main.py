@@ -3,35 +3,38 @@
 # Carlota Juárez Alonso
 
 # Set up enviroment
-import sys
+
 import json
 import os
 import subprocess
 from shutil import copyfile
-import mne_bids_pipeline
+
 
 # Current path 
+
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-# Path to mne-study-template
-mnest_path = '/mne-bids-pipeline'
+# Read the parameters from Brainlife 
 
-# Read the parameters 
 with open (os.path.join(__location__, 'config.json')) as f:
     config = json.load(f)
 
 # Entry and output paths 
+
 bids_root = str(config['bids'])
 deriv_root = os.path.join(__location__, 'out_dir')
 
 # Verify the output file
+
 if not os.path.exists(deriv_root):
     os.makedirs(deriv_root)
 
 # Rewrite the info in the .json file into a .py file
+
 file_name = os.path.join(__location__, 'pipeline_config.py')
 
 # Inputs from the interface web to MNE variables
+
 with open(file_name, 'w') as f:
     # -- General settings --
 
@@ -100,10 +103,15 @@ with open(file_name, 'w') as f:
 
 # Run python script
 
-os.system(mnest_path+'/_run.py --config='+__location__+'/mne_config.py --steps=preprocessing,report/make_reports.py')
+command = ["mne_bids_pipeline", f"--config={file_name}", "--steps=init"]
 
+try:
+    subprocess.run(command, check=True)
+except subprocess.CalledProcessError as e:
+    raise e
 
 # Find the reports and make a copy in out_html folder
+
 for dirpaths, dirnames, filenames in os.walk(deriv_root):
     for filename in [f for f in filenames if f.endswith(".html")]:
         if not "sub-average" in filename:
