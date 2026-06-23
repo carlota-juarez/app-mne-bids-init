@@ -1,5 +1,5 @@
 {
-    "bids": "C:/mne_practical_meeg_2025/ds000117_pruned", 
+    "bids": "C:/mis_apps_brainlife/ds000248", 
     "sessions": "all",
     "allow_missing_sessions": false,
     "task": "auditory",

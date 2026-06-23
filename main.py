@@ -17,18 +17,18 @@ __location__ = os.path.realpath(
 with open (os.path.join(__location__, 'config.json')) as f:
     config = json.load(f)
 
-# entry and output paths 
+# Entry and output paths 
 bids_root = str(config['bids'])
 deriv_root = os.path.join(__location__, 'out_dir')
 
-#verify the output file
+# Verify the output file
 if not os.path.exists(deriv_root):
     os.makedirs(deriv_root)
 
-#rewrite the info in the .json file into a .py file
+# Rewrite the info in the .json file into a .py file
 file_name = os.path.join(__location__, 'pipeline_config.py')
 
-#inputs from the interface web to MNE variables
+# Inputs from the interface web to MNE variables
 with open(file_name, 'w') as f:
     # -- General settings --
 
