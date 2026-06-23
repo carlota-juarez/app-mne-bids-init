@@ -1,5 +1,5 @@
 {
-    "bids": "C:/mis_apps_brainlife/ds000248", 
+    "bids": "input/bids", 
     "sessions": "all",
     "allow_missing_sessions": false,
     "task": "audiovisual",

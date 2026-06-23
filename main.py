@@ -45,7 +45,10 @@ with open(file_name, 'w') as f:
     f.write(f"deriv_root = '{deriv_root}'\n")
 
     if config['sessions']:
-        f.write(f"sessions = {config['sessions']}\n")
+        if isinstance(config['sessions'], str):
+            f.write(f"sessions = '{config['sessions']}'\n")
+        else:
+            f.write(f"sessions = {config['sessions']}\n")
 
     if config['allow_missing_sessions']:
         f.write(f"allow_missing_sessions = {config['allow_missing_sessions']}\n")
@@ -54,7 +57,10 @@ with open(file_name, 'w') as f:
         f.write(f"task = '{config['task']}'\n")
 
     if config['runs']:
-        f.write(f"runs = {config['runs']}\n")
+        if isinstance(config['runs'], str):
+            f.write(f"runs = '{config['runs']}'\n")
+        else:
+            f.write(f"runs = {config['runs']}\n")
     
     if config['exclude_runs']:
         f.write(f"exclude_runs = {config['exclude_runs']}\n")
@@ -125,4 +131,4 @@ for dirpaths, dirnames, filenames in os.walk(deriv_root):
     for filename in [f for f in filenames if f.endswith(".html")]:
         if not "sub-average" in filename:
             print(filename)
-            copyfile(os.path.join(dirpath, filename), os.path.join(html_report_dir, filename))
+            copyfile(os.path.join(dirpaths, filename), os.path.join(html_report_dir, filename))
