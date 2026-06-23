@@ -17,5 +17,7 @@
     "interactive": false,
     "ch_types": ["meg"],
     "data_type": "meg",
-    "eeg_reference": "average"
+    "eeg_reference": "average",
+    "reader_extra_params": {},
+    "read_raw_bids_verbose": ""
 }

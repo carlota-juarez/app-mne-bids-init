@@ -1,5 +1,5 @@
 name: app-mne-bids-init
-chaannels:
+channels:
   - conda-forge
   - defaults
 dependencies:

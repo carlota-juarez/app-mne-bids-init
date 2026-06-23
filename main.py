@@ -23,11 +23,14 @@ with open (os.path.join(__location__, 'config.json')) as f:
 
 bids_root = str(config['bids'])
 deriv_root = os.path.join(__location__, 'out_dir')
+html_report_dir = os.path.join(__location__, 'html_report')
 
-# Verify the output file
+# Ensure output directories exist
 
 if not os.path.exists(deriv_root):
     os.makedirs(deriv_root)
+if not os.path.exists(html_report_dir):
+    os.makedirs(html_report_dir)
 
 # Rewrite the info in the .json file into a .py file
 
@@ -86,6 +89,12 @@ with open(file_name, 'w') as f:
     if config['interactive']:
         f.write(f"interactive = {config['interactive']}\n")
 
+    if config['reader_extra_params']: 
+        f.write(f"reader_extra_params = {config['reader_extra_params']}\n")
+    
+    if config['read_raw_bids_verbose']:
+        f.write(f"read_raw_bids_verbose = {config['read_raw_bids_verbose']}\n")
+
     # -- EEG configurations --
 
     if config['ch_types']: 
@@ -98,7 +107,7 @@ with open(file_name, 'w') as f:
         f.write(f"eeg_reference = '{config['eeg_reference']}'\n")
     else:
         f.write("eeg_reference = 'average'\n")
-    
+
     f.close()
 
 # Run python script
@@ -116,4 +125,4 @@ for dirpaths, dirnames, filenames in os.walk(deriv_root):
     for filename in [f for f in filenames if f.endswith(".html")]:
         if not "sub-average" in filename:
             print(filename)
-            copyfile(os.path.join(__location__, "out_dir", dirpath, filename), os.path.join(__location__, "html_report", filename))
+            copyfile(os.path.join(dirpath, filename), os.path.join(html_report_dir, filename))
