@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #make output directory
 mkdir -p out_dir
 
