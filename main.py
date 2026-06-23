@@ -3,15 +3,18 @@
 # Carlota Juárez Alonso
 
 # Set up enviroment
+import sys
 import json
 import os
 import subprocess
 from shutil import copyfile
+import mne_bids_pipeline
 
 # Current path 
-__location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__))
-)
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+# Path to mne-study-template
+mnest_path = '/mne-bids-pipeline'
 
 # Read the parameters 
 with open (os.path.join(__location__, 'config.json')) as f:
@@ -96,12 +99,9 @@ with open(file_name, 'w') as f:
     f.close()
 
 # Run python script
-command = ["mne_bids_pipeline", f"--config={file_name}", "--steps=init"]
 
-try:
-    subprocess.run(command, check = True)
-except subprocess.calledProcessError as e:
-    raise e
+os.system(mnest_path+'/_run.py --config='+__location__+'/mne_config.py --steps=preprocessing,report/make_reports.py')
+
 
 # Find the reports and make a copy in out_html folder
 for dirpaths, dirnames, filenames in os.walk(deriv_root):
