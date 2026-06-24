@@ -5,116 +5,140 @@
 # Set up enviroment
 
 import json
-import os
+from pathlib import Path
 import subprocess
 from shutil import copyfile
 
 
 # Current path 
 
-__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+__location__ = Path(__file__).resolve().parent
 
 # Read the parameters from Brainlife 
 
-with open (os.path.join(__location__, 'config.json')) as f:
+config_path = __location__/'config.json'
+if not config_path.exists():
+    raise FileNotFoundError(f"The configuration file could not be found in {config_path}")
+
+with open (config_path, 'r') as f:
     config = json.load(f)
 
 # Entry and output paths 
 
-bids_root = str(config['bids'])
-deriv_root = os.path.join(__location__, 'out_dir')
-html_report_dir = os.path.join(__location__, 'html_report')
+bids_root = config.get('bids')
+ch_types = config.get('ch_types')
+
+if not bids_root:
+    raise ValueError("The 'bids' parameter is required")
+if not ch_types:
+    raise ValueError("The 'ch_types' parameter is required")
+
+deriv_root = __location__/'out_dir'
+html_report_dir = __location__/'html_report'
 
 # Ensure output directories exist
 
-if not os.path.exists(deriv_root):
-    os.makedirs(deriv_root)
-if not os.path.exists(html_report_dir):
-    os.makedirs(html_report_dir)
+deriv_root.mkdir(parents = True, exist_ok = True)
+html_report_dir.mkdir(parents = True, exist_ok = True)
 
 # Rewrite the info in the .json file into a .py file
 
-file_name = os.path.join(__location__, 'pipeline_config.py')
+file_name = __location__/'pipeline_config.py'
 
 # Inputs from the interface web to MNE variables
 
 with open(file_name, 'w') as f:
-    # -- General settings --
 
     f.write(f"bids_root = '{bids_root}'\n")
+    f.write(f"ch_types = {ch_types}\n")
     f.write(f"deriv_root = '{deriv_root}'\n")
 
-    if config['sessions']:
-        if isinstance(config['sessions'], str):
-            f.write(f"sessions = '{config['sessions']}'\n")
+    # General settings
+
+    subjects_dir = config.get('subjects_dir', None)
+    if subjects_dir:
+        f.write(f"subjects_dir = '{subjects_dir}'\n")
+
+    sessions = config.get('sessions', 'all')
+    if sessions:
+        if isinstance(sessions, str):
+            f.write(f"sessions = '{sessions}'\n")
         else:
-            f.write(f"sessions = {config['sessions']}\n")
+            f.write(f"sessions = {sessions}\n")
 
-    if config['allow_missing_sessions']:
-        f.write(f"allow_missing_sessions = {config['allow_missing_sessions']}\n")
+    allow_missing_sessions = config.get('allow_missing_sessions', False)
+    f.write(f"allow_missing_sessions = {allow_missing_sessions}\n")
 
-    if config['task']:
-        f.write(f"task = '{config['task']}'\n")
+    task = config.get('task', None)
+    if task:
+        f.write(f"task = '{task}'\n")
 
-    if config['runs']:
-        if isinstance(config['runs'], str):
-            f.write(f"runs = '{config['runs']}'\n")
+    runs = config.get('runs', 'all')
+    if runs:
+        if isinstance(runs, str):
+            f.write(f"runs = '{runs}'\n")
         else:
-            f.write(f"runs = {config['runs']}\n")
+            f.write(f"runs = {runs}\n")
     
-    if config['exclude_runs']:
-        f.write(f"exclude_runs = {config['exclude_runs']}\n")
+    exclude_runs = config.get('exclude_runs', [])
+    if exclude_runs:
+        f.write(f"exclude_runs = {exclude_runs}\n")
 
-    if config['crop_runs']:
-        f.write(f"crop_runs = {config['crop_runs']}\n")
+    crop_runs = config.get('crop_runs', None)
+    if crop_runs:
+        f.write(f"crop_runs = {crop_runs}\n")
     
-    if config['proc']:
-        f.write(f"proc = '{config['proc']}'\n")
+    proc = config.get('proc', None)
+    if proc:
+        f.write(f"proc = '{proc}'\n")
 
-    if config['rec']:
-        f.write(f"rec = '{config['rec']}'\n")
+    rec = config.get('rec', None)
+    if rec:
+        f.write(f"rec = '{rec}'\n")
 
-    if config['space']:
-        f.write(f"space = '{config['space']}'\n")
+    space = config.get('space', None)
+    if space:
+        f.write(f"space = '{space}'\n")
     
-    if config['acq']:
-        f.write(f"acq = '{config['acq']}'\n")
+    acq = config.get('acq', None)
+    if acq:
+        f.write(f"acq = '{acq}'\n")
     
-    if config['conditions']:   
-        f.write(f"conditions = {config['conditions']}\n")
+    conditions = config.get('conditions', None)
+    if conditions:
+        f.write(f"conditions = {conditions}\n")
     
-    if config['subjects']:
-        f.write(f"subjects = {config['subjects']}\n")
+    subjects = config.get('subjects', 'all')
+    if subjects:
+        if isinstance(subjects, str):
+            f.write(f"subjects = '{subjects}'\n")
+        else:
+            f.write(f"subjects = {subjects}\n")
 
-    if config['exclude_subjects']:
-        f.write(f"exclude_subjects = {config['exclude_subjects']}\n")
+    exclude_subjects = config.get('exclude_subjects', [])
+    if exclude_subjects:
+        f.write(f"exclude_subjects = {exclude_subjects}\n")
 
-    if config['task_is_rest']:
-        f.write(f"task_is_rest = {config['task_is_rest']}\n")
+    task_is_rest = config.get('task_is_rest', False)
+    f.write(f"task_is_rest = {task_is_rest}\n")
 
-    if config['interactive']:
-        f.write(f"interactive = {config['interactive']}\n")
+    interactive = config.get('interactive', False)
+    f.write(f"interactive = {interactive}\n")
 
-    if config['reader_extra_params']: 
-        f.write(f"reader_extra_params = {config['reader_extra_params']}\n")
+    reader_extra_params = config.get('reader_extra_params', {})
+    if reader_extra_params:
+        f.write(f"reader_extra_params = {reader_extra_params}\n")
     
-    if config['read_raw_bids_verbose']:
-        f.write(f"read_raw_bids_verbose = {config['read_raw_bids_verbose']}\n")
+    read_raw_bids_verbose = config.get('read_raw_bids_verbose', None)
+    if read_raw_bids_verbose is not None:
+        f.write(f"read_raw_bids_verbose = {read_raw_bids_verbose}\n")
 
-    # -- EEG configurations --
+    data_type = config.get('data_type', None)
+    if data_type:
+        f.write(f"data_type = '{data_type}'\n")
 
-    if config['ch_types']: 
-        f.write(f"ch_types = {config['ch_types']}\n")
-
-    if config['data_type']:
-        f.write(f"data_type = '{config['data_type']}'\n")
-
-    if config['eeg_reference']:
-        f.write(f"eeg_reference = '{config['eeg_reference']}'\n")
-    else:
-        f.write("eeg_reference = 'average'\n")
-
-    f.close()
+    eeg_reference = config.get('eeg_reference', 'average')
+    f.write(f"eeg_reference = '{eeg_reference}'\n")
 
 # Run python script
 
@@ -127,8 +151,9 @@ except subprocess.CalledProcessError as e:
 
 # Find the reports and make a copy in out_html folder
 
-for dirpaths, dirnames, filenames in os.walk(deriv_root):
-    for filename in [f for f in filenames if f.endswith(".html")]:
-        if not "sub-average" in filename:
-            print(filename)
-            copyfile(os.path.join(dirpaths, filename), os.path.join(html_report_dir, filename))
+real_deriv_root = deriv_root.resolve()
+
+for path in real_deriv_root.rglob("*.html"):
+        if "sub-average" not in path.name:
+            print(path.name)
+            copyfile(path, html_report_dir/path.name)
