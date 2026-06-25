@@ -50,8 +50,8 @@ file_name = __location__/'pipeline_config.py'
 with open(file_name, 'w') as f:
 
     f.write(f"bids_root = '{bids_root}'\n")
-    f.write(f"ch_types = {ch_types}\n")
     f.write(f"deriv_root = '{deriv_root}'\n")
+    f.write(f"ch_types = {ch_types}\n")
 
     # General settings
 
@@ -124,22 +124,58 @@ with open(file_name, 'w') as f:
 
     interactive = config.get('interactive', False)
     f.write(f"interactive = {interactive}\n")
+    
+    process_empty_room = config.get('process_empty_room', False)
+    f.write(f"process_empty_room = {process_empty_room}\n") 
+
+    process_rest = config.get('process_rest', False)
+    f.write(f"process_rest = {process_rest}\n")
+
+    data_type = config.get('data_type', None)
+    if data_type:
+        f.write(f"data_type = '{data_type}'\n")
+
+    eog_channels = config.get('eog_channels', None)
+    if eog_channels:
+        f.write(f"eog_channels = {eog_channels}\n")
+
+    eeg_bipolar_channels = config.get('eeg_bipolar_channels', None)
+    if eeg_bipolar_channels:
+        f.write(f"eeg_bipolar_channels = {eeg_bipolar_channels}\n")
+    
+    eeg_reference = config.get('eeg_reference', 'average')
+    if eeg_reference:
+        f.write(f"eeg_reference = '{eeg_reference}'\n")
+
+    eeg_template_montage = config.get('eeg_template_montage', None)
+    f.write(f"eeg_template_montage = {eeg_template_montage}\n")
+
+    drop_channels = config.get('drop_channels', [])
+    if drop_channels:
+        f.write(f"drop_channels = {drop_channels}\n")
+
+    analyze_channels = config.get('analyze_channels', 'ch_types')
+    if isinstance(analyze_channels, str):
+        f.write(f"analyze_channels = '{analyze_channels}'\n")
+    else:
+        f.write(f"analyze_channels = {analyze_channels}\n")
 
     reader_extra_params = config.get('reader_extra_params', {})
     if reader_extra_params:
         f.write(f"reader_extra_params = {reader_extra_params}\n")
     
     read_raw_bids_verbose = config.get('read_raw_bids_verbose', None)
-    if read_raw_bids_verbose is not None:
+    if read_raw_bids_verbose:
         f.write(f"read_raw_bids_verbose = {read_raw_bids_verbose}\n")
 
-    data_type = config.get('data_type', None)
-    if data_type:
-        f.write(f"data_type = '{data_type}'\n")
+    plot_psd_for_runs = config.get('plot_psd_for_runs', 'all')
+    if plot_psd_for_runs:
+        f.write(f"plot_psd_for_runs = {plot_psd_for_runs}\n")
 
-    eeg_reference = config.get('eeg_reference', 'average')
-    f.write(f"eeg_reference = '{eeg_reference}'\n")
-
+    random_state = config.get('random_state', None)
+    if random_state:
+        f.write(f"random_state = {random_state}\n")
+        
 # Run python script
 
 command = ["mne_bids_pipeline", f"--config={file_name}", "--steps=init"]
