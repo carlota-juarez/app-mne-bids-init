@@ -12,7 +12,6 @@
   "rec": null,
   "space": null,
   "acq": null,
-  "conditions": ["auditory/left", "auditory/right", "visual/left", "visual/right"],
   "subjects": ["01", "02", "03"],
   "exclude_subjects": ["04"],
   "task_is_rest": false,

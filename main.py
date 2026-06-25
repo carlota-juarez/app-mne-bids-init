@@ -104,10 +104,6 @@ with open(file_name, 'w') as f:
     if acq:
         f.write(f"acq = '{acq}'\n")
     
-    conditions = config.get('conditions', None)
-    if conditions:
-        f.write(f"conditions = {conditions}\n")
-    
     subjects = config.get('subjects', 'all')
     if subjects:
         if isinstance(subjects, str):
@@ -190,6 +186,6 @@ except subprocess.CalledProcessError as e:
 real_deriv_root = deriv_root.resolve()
 
 for path in real_deriv_root.rglob("*.html"):
-        if "sub-average" not in path.name:
-            print(path.name)
-            copyfile(path, html_report_dir/path.name)
+    if "sub-average" not in path.name:
+        print(path.name)
+        copyfile(path, html_report_dir/path.name)
